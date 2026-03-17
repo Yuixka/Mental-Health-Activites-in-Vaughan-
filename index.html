@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Vaughan Nature Events</title>
+  <style>
+    :root{
+      --bg:#0b0f0d;
+      --panel:#101612;
+      --panel-2:#131a15;
+      --card:#0f1511;
+      --ink:#f7f7f2;
+      --muted:#cfd8cf;
+      --emerald:#0f7a5a;
+      --emerald-2:#18a67b;
+      --gold:#d4af37;
+      --gold-soft:#f2df95;
+      --white:#ffffff;
+      --line:rgba(255,255,255,0.08);
+      --shadow:0 18px 50px rgba(0,0,0,0.35);
+      --radius:22px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#08100c 0%, #0b0f0d 100%);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    body{padding:28px 18px}
+    .app{max-width:1180px;margin:0 auto;display:grid;gap:22px}
+
+    .searchWrap{
+      background:linear-gradient(180deg,#0e1712,#0b120e);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:18px;
+    }
+    .searchBar{
+      display:flex;align-items:center;gap:12px;
+      background:#0a0f0c;border:1px solid rgba(212,175,55,0.22);
+      border-radius:18px;padding:14px 16px;
+    }
+    .searchBar input{
+      width:100%;background:transparent;border:none;outline:none;color:var(--white);
+      font-size:15px
+    }
+    .searchBar input::placeholder{color:#9bb0a2}
+    .searchMeta{
+      margin-top:10px;font-size:13px;color:#b9c7bc
+    }
+
+    .section{
+      background:linear-gradient(180deg,var(--panel),var(--panel-2));
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      padding:20px;
+    }
+    .sectionHead{
+      display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:16px
+    }
+    .sectionTitle{
+      margin:0;font-size:24px;font-weight:900;letter-spacing:.01em
+    }
+    .sectionSub{
+      margin:0;color:#b8c5ba;font-size:14px
+    }
+
+    /* Slideshow */
+    .slider{
+      position:relative;overflow:hidden;border-radius:24px;min-height:280px;
+      background:
+        radial-gradient(circle at top right, rgba(212,175,55,0.16), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(24,166,123,0.18), transparent 30%),
+        linear-gradient(135deg,#0b0f0d,#132019);
+      border:1px solid rgba(255,255,255,0.06);
+    }
+    .slides{
+      display:flex;transition:transform .6s ease;height:100%;
+    }
+    .slide{
+      min-width:100%;padding:28px;display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:stretch
+    }
+    .slideVisual{
+      border-radius:22px;position:relative;overflow:hidden;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(212,175,55,0.24), transparent 18%),
+        radial-gradient(circle at 70% 28%, rgba(255,255,255,0.07), transparent 18%),
+        radial-gradient(circle at 35% 78%, rgba(24,166,123,0.28), transparent 18%),
+        linear-gradient(135deg,#0e1612,#173023 45%, #0d1712);
+      border:1px solid rgba(255,255,255,0.07);
+    }
+    .sparkles,.sparkles:before,.sparkles:after{
+      content:"";position:absolute;inset:0;background-repeat:repeat;background-size:180px 180px;opacity:.75;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cg fill='%23d4af37' fill-opacity='.65'%3E%3Ccircle cx='22' cy='26' r='2'/%3E%3Ccircle cx='112' cy='44' r='1.8'/%3E%3Ccircle cx='150' cy='120' r='2.2'/%3E%3Cpath d='M74 108l3 7 7 3-7 3-3 7-3-7-7-3 7-3z'/%3E%3Cpath d='M138 26l2 5 5 2-5 2-2 5-2-5-5-2 5-2z'/%3E%3C/g%3E%3C/svg%3E");
+      animation:floatStars 20s linear infinite;
+    }
+    .sparkles:before{animation-duration:28s;opacity:.45}
+    .sparkles:after{animation-duration:36s;opacity:.28}
+    @keyframes floatStars{from{transform:translateY(0)}to{transform:translateY(18px)}}
+
+    .slideInfo{
+      display:flex;flex-direction:column;justify-content:center;gap:14px;
+      padding:4px 2px
+    }
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;
+      width:max-content;padding:8px 12px;border-radius:999px;
+      background:rgba(24,166,123,0.14);border:1px solid rgba(24,166,123,0.35);
+      color:#dff8ef;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase
+    }
+    .slideTitle{
+      margin:0;font-size:34px;line-height:1.05;font-weight:900;color:#fff
+    }
+    .slideMeta{
+      margin:0;color:#d6dfd8;font-size:15px;line-height:1.6
+    }
+    .slideDesc{
+      margin:0;color:#b5c3b8;font-size:14px;line-height:1.7
+    }
+    .slideActions{
+      display:flex;gap:10px;flex-wrap:wrap;margin-top:4px
+    }
+    .btn{
+      appearance:none;border:none;cursor:pointer;text-decoration:none;
+      padding:12px 16px;border-radius:14px;font-weight:800;
+      display:inline-flex;align-items:center;justify-content:center
+    }
+    .btnPrimary{background:linear-gradient(135deg,var(--gold),#f0d775);color:#111}
+    .btnSecondary{background:#111914;color:#fff;border:1px solid rgba(255,255,255,0.08)}
+    .dots{
+      position:absolute;left:0;right:0;bottom:14px;display:flex;justify-content:center;gap:8px
+    }
+    .dot{
+      width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.25);border:none;cursor:pointer
+    }
+    .dot.active{background:var(--gold)}
+
+    /* Month cards */
+    .monthsGrid{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:16px;
+    }
+    .monthCard{
+      min-height:172px;
+      padding:18px;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,0.08);
+      position:relative;
+      overflow:hidden;
+      cursor:pointer;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);
+      transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(212,175,55,0.16), transparent 18%),
+        radial-gradient(circle at 80% 32%, rgba(255,255,255,0.06), transparent 16%),
+        radial-gradient(circle at 26% 82%, rgba(24,166,123,0.16), transparent 16%),
+        linear-gradient(145deg,#0f1411,#162019);
+    }
+    .monthCard:hover{transform:translateY(-4px);border-color:rgba(212,175,55,0.35)}
+    .monthCard.active{outline:2px solid rgba(212,175,55,.55);box-shadow:0 0 0 4px rgba(212,175,55,.08)}
+    .monthName{
+      font-size:18px;font-weight:900;color:#fff;margin:0 0 10px
+    }
+    .miniGrid{
+      display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:8px
+    }
+    .miniCell{
+      text-align:center;font-size:10px;color:#d8e0da;padding:4px 0;border-radius:8px
+    }
+    .miniCell.hasEvent{background:rgba(212,175,55,0.18);color:#fff}
+    .miniCount{
+      position:absolute;right:14px;bottom:12px;font-size:12px;color:#f3e1a2;font-weight:800
+    }
+
+    /* Calendar */
+    .calendarTop{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap
+    }
+    .monthTitle{
+      font-size:28px;font-weight:900;margin:0
+    }
+    .calendarNav{
+      display:flex;gap:8px
+    }
+    .navBtn{
+      width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:#111813;color:#fff;cursor:pointer;font-size:18px
+    }
+    .weekdayRow,.daysGrid{
+      display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px
+    }
+    .weekday{
+      padding:10px 8px;text-align:center;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#d7e1da
+    }
+    .dayTile{
+      min-height:138px;background:linear-gradient(180deg,#0d1410,#111913);
+      border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:10px;
+      display:flex;flex-direction:column;gap:8px
+    }
+    .dayTile.empty{
+      background:rgba(255,255,255,0.02)
+    }
+    .dayNum{
+      font-size:14px;font-weight:900;color:#fff
+    }
+    .dayTile.today .dayNum{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:30px;height:30px;border-radius:999px;background:var(--gold);color:#111
+    }
+    .eventChip{
+      display:block;
+      padding:8px 9px;border-radius:12px;text-decoration:none;
+      background:rgba(24,166,123,0.16);border:1px solid rgba(24,166,123,0.26);color:#ebfff7;
+      font-size:11px;font-weight:700;line-height:1.35
+    }
+    .eventChip:hover{background:rgba(24,166,123,0.24)}
+    .eventTime{
+      display:block;color:#b9f1de;font-size:10px;font-weight:800;margin-bottom:4px
+    }
+
+    .emptyState{
+      padding:20px;border-radius:18px;background:rgba(255,255,255,0.03);border:1px solid var(--line);color:#d5dfd7
+    }
+    .error{
+      color:#ffcdc7;background:#2a120f;border:1px solid rgba(255,120,100,.25);padding:16px;border-radius:16px
+    }
+
+    @media (max-width: 980px){
+      .slide{grid-template-columns:1fr}
+      .monthsGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .dayTile{min-height:120px}
+    }
+    @media (max-width: 640px){
+      body{padding:16px 10px}
+      .monthsGrid{grid-template-columns:1fr}
+      .weekdayRow,.daysGrid{gap:6px}
+      .dayTile{min-height:100px;padding:8px}
+      .slideTitle{font-size:26px}
+      .monthTitle{font-size:22px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="searchWrap">
+      <div class="searchBar">
+        <span>⌕</span>
+        <input id="searchInput" type="text" placeholder="Search event, program, institution, location..." />
+      </div>
+      <div class="searchMeta" id="searchMeta">Loading events...</div>
+    </div>
+
+    <section class="section">
+      <div class="sectionHead">
+        <div>
+          <h2 class="sectionTitle">Highlights of the Month</h2>
+          <p class="sectionSub">3 rotating picks from the current month</p>
+        </div>
+      </div>
+      <div class="slider" id="slider">
+        <div class="slides" id="slides"></div>
+        <div class="dots" id="dots"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="sectionHead">
+        <div>
+          <h2 class="sectionTitle">Choose a Month</h2>
+          <p class="sectionSub">Click a month card to open its events</p>
+        </div>
+      </div>
+      <div class="monthsGrid" id="monthsGrid"></div>
+    </section>
+
+    <section class="section">
+      <div class="calendarTop">
+        <div>
+          <h2 class="monthTitle" id="monthTitle">Month</h2>
+          <p class="sectionSub" id="monthSub">Calendar view</p>
+        </div>
+        <div class="calendarNav">
+          <button class="navBtn" id="prevMonthBtn" aria-label="Previous month">‹</button>
+          <button class="navBtn" id="nextMonthBtn" aria-label="Next month">›</button>
+        </div>
+      </div>
+      <div class="weekdayRow" id="weekdayRow"></div>
+      <div class="daysGrid" id="daysGrid"></div>
+    </section>
+  </div>
+
+  <script>
+    const EVENTS_URL = "https://raw.githubusercontent.com/Yuixka/vaughan-events-scraper/main/nature_teens_events.json";
+
+    const MONTHS = [
+      "January","February","March","April","May","June",
+      "July","August","September","October","November","December"
+    ];
+    const WEEKDAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+    let allEvents = [];
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+
+    let selectedYear = currentYear;
+    let selectedMonth = currentMonth;
+    let searchQuery = "";
+    let slideIndex = 0;
+    let slideTimer = null;
+
+    const searchInput = document.getElementById("searchInput");
+    const searchMeta = document.getElementById("searchMeta");
+    const monthsGrid = document.getElementById("monthsGrid");
+    const monthTitle = document.getElementById("monthTitle");
+    const monthSub = document.getElementById("monthSub");
+    const weekdayRow = document.getElementById("weekdayRow");
+    const daysGrid = document.getElementById("daysGrid");
+    const slidesEl = document.getElementById("slides");
+    const dotsEl = document.getElementById("dots");
+    const prevMonthBtn = document.getElementById("prevMonthBtn");
+    const nextMonthBtn = document.getElementById("nextMonthBtn");
+
+    function escapeHtml(str=""){
+      return str
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function parseEventDate(event){
+      if (!event || !event.start) return null;
+      const d = new Date(event.start);
+      return isNaN(d.getTime()) ? null : d;
+    }
+
+    function formatDatePretty(d){
+      return d.toLocaleDateString(undefined, {
+        weekday:"short", month:"short", day:"2-digit", year:"numeric"
+      });
+    }
+
+    function formatTimeFromEvent(event){
+      if (!event.start) return "";
+      if (/^\d{4}-\d{2}-\d{2}$/.test(event.start)) return "All day";
+      const d = new Date(event.start);
+      if (isNaN(d.getTime())) return "";
+      return d.toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+    }
+
+    function getExtended(event){
+      return event.extendedProps || {};
+    }
+
+    function eventMatchesSearch(event, q){
+      if (!q) return true;
+      const p = getExtended(event);
+      const hay = [
+        event.title || "",
+        event.url || "",
+        p.location || "",
+        p.venue || "",
+        p.source || "",
+        p.price || "",
+        p.age_info || "",
+        p.description || "",
+        ...(p.tags || [])
+      ].join(" ").toLowerCase();
+      return hay.includes(q.toLowerCase());
+    }
+
+    function filteredEvents(){
+      return allEvents.filter(e => eventMatchesSearch(e, searchQuery));
+    }
+
+    function monthEvents(year, month){
+      return filteredEvents().filter(event => {
+        const d = parseEventDate(event);
+        return d && d.getFullYear() === year && d.getMonth() === month;
+      }).sort((a,b) => new Date(a.start) - new Date(b.start));
+    }
+
+    function pickRandom(arr, count){
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy.slice(0, count);
+    }
+
+    function renderWeekdays(){
+      weekdayRow.innerHTML = WEEKDAYS.map(day => `<div class="weekday">${day}</div>`).join("");
+    }
+
+    function renderMonthCards(){
+      const events = filteredEvents();
+      const counts = new Array(12).fill(0);
+      const daySetByMonth = Array.from({length:12}, () => new Set());
+
+      events.forEach(event => {
+        const d = parseEventDate(event);
+        if (!d || d.getFullYear() !== selectedYear) return;
+        counts[d.getMonth()]++;
+        daySetByMonth[d.getMonth()].add(d.getDate());
+      });
+
+      monthsGrid.innerHTML = MONTHS.map((name, monthIndex) => {
+        const daysInMonth = new Date(selectedYear, monthIndex + 1, 0).getDate();
+        const firstWeekday = new Date(selectedYear, monthIndex, 1).getDay();
+        const cells = [];
+        for (let i = 0; i < firstWeekday; i++) cells.push(`<div class="miniCell"></div>`);
+        for (let d = 1; d <= Math.min(daysInMonth, 31); d++){
+          const hasEvent = daySetByMonth[monthIndex].has(d);
+          cells.push(`<div class="miniCell ${hasEvent ? "hasEvent" : ""}">${d}</div>`);
+        }
+
+        return `
+          <div class="monthCard ${monthIndex === selectedMonth ? "active" : ""}" data-month="${monthIndex}">
+            <h3 class="monthName">${name}</h3>
+            <div class="miniGrid">${cells.join("")}</div>
+            <div class="miniCount">${counts[monthIndex]} event${counts[monthIndex] === 1 ? "" : "s"}</div>
+          </div>
+        `;
+      }).join("");
+
+      [...monthsGrid.querySelectorAll(".monthCard")].forEach(card => {
+        card.addEventListener("click", () => {
+          selectedMonth = Number(card.dataset.month);
+          renderAll();
+        });
+      });
+    }
+
+    function renderSlides(){
+      const monthList = monthEvents(currentYear, currentMonth);
+      const picks = pickRandom(monthList, Math.min(3, monthList.length));
+      slidesEl.innerHTML = "";
+      dotsEl.innerHTML = "";
+      slideIndex = 0;
+      clearInterval(slideTimer);
+
+      if (!picks.length){
+        slidesEl.innerHTML = `
+          <div class="slide">
+            <div class="slideVisual"><div class="sparkles"></div></div>
+            <div class="slideInfo">
+              <span class="badge">No highlights</span>
+              <h3 class="slideTitle">No events found for ${MONTHS[currentMonth]}</h3>
+              <p class="slideMeta">Try another search or check back later.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      picks.forEach((event, i) => {
+        const p = getExtended(event);
+        const d = parseEventDate(event);
+        slidesEl.insertAdjacentHTML("beforeend", `
+          <div class="slide">
+            <div class="slideVisual"><div class="sparkles"></div></div>
+            <div class="slideInfo">
+              <span class="badge">Featured Pick</span>
+              <h3 class="slideTitle">${escapeHtml(event.title || "Untitled Event")}</h3>
+              <p class="slideMeta">${d ? escapeHtml(formatDatePretty(d)) : "Date TBD"}${p.location ? " • " + escapeHtml(p.location) : ""}</p>
+              <p class="slideDesc">${escapeHtml((p.description || "A featured outdoor event for this month.").slice(0, 180))}</p>
+              <div class="slideActions">
+                ${event.url ? `<a class="btn btnPrimary" href="${event.url}" target="_blank" rel="noreferrer">View Event</a>` : ""}
+                ${p.source ? `<button class="btn btnSecondary" type="button">${escapeHtml(p.source)}</button>` : ""}
+              </div>
+            </div>
+          </div>
+        `);
+        dotsEl.insertAdjacentHTML("beforeend", `<button class="dot ${i === 0 ? "active" : ""}" data-i="${i}"></button>`);
+      });
+
+      function updateSlide(){
+        slidesEl.style.transform = `translateX(-${slideIndex * 100}%)`;
+        [...dotsEl.children].forEach((d, i) => d.classList.toggle("active", i === slideIndex));
+      }
+
+      [...dotsEl.children].forEach(dot => {
+        dot.addEventListener("click", () => {
+          slideIndex = Number(dot.dataset.i);
+          updateSlide();
+        });
+      });
+
+      if (picks.length > 1){
+        slideTimer = setInterval(() => {
+          slideIndex = (slideIndex + 1) % picks.length;
+          updateSlide();
+        }, 3800);
+      }
+    }
+
+    function renderCalendar(){
+      const list = monthEvents(selectedYear, selectedMonth);
+      monthTitle.textContent = `${MONTHS[selectedMonth]} ${selectedYear}`;
+      monthSub.textContent = `${list.length} event${list.length === 1 ? "" : "s"} found`;
+
+      const firstDay = new Date(selectedYear, selectedMonth, 1);
+      const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
+      const leading = firstDay.getDay();
+      const today = new Date();
+
+      const byDay = new Map();
+      list.forEach(event => {
+        const d = parseEventDate(event);
+        if (!d) return;
+        const day = d.getDate();
+        if (!byDay.has(day)) byDay.set(day, []);
+        byDay.get(day).push(event);
+      });
+
+      const cells = [];
+      for (let i = 0; i < leading; i++){
+        cells.push(`<div class="dayTile empty"></div>`);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++){
+        const isToday =
+          today.getFullYear() === selectedYear &&
+          today.getMonth() === selectedMonth &&
+          today.getDate() === day;
+
+        const ev = byDay.get(day) || [];
+        const chips = ev.map(event => {
+          return `
+            <a class="eventChip" href="${event.url || "#"}" ${event.url ? `target="_blank" rel="noreferrer"` : ""} title="${escapeHtml(event.title || "")}">
+              <span class="eventTime">${escapeHtml(formatTimeFromEvent(event))}</span>
+              ${escapeHtml(event.title || "Untitled")}
+            </a>
+          `;
+        }).join("");
+
+        cells.push(`
+          <div class="dayTile ${isToday ? "today" : ""}">
+            <div class="dayNum">${day}</div>
+            ${chips || ""}
+          </div>
+        `);
+      }
+
+      daysGrid.innerHTML = cells.join("");
+
+      if (!list.length){
+        daysGrid.innerHTML = `<div class="emptyState" style="grid-column:1 / -1;">No events found for ${MONTHS[selectedMonth]}${searchQuery ? ` matching “${escapeHtml(searchQuery)}”` : ""}.</div>`;
+      }
+    }
+
+    function renderMeta(){
+      const total = filteredEvents().length;
+      searchMeta.textContent = `${total} event${total === 1 ? "" : "s"} loaded${searchQuery ? ` • filtered by "${searchQuery}"` : ""}`;
+    }
+
+    function renderAll(){
+      renderMeta();
+      renderMonthCards();
+      renderSlides();
+      renderCalendar();
+    }
+
+    async function loadEvents(){
+      try{
+        const res = await fetch(EVENTS_URL, {cache:"no-store"});
+        if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+        const data = await res.json();
+        if (!Array.isArray(data)) throw new Error("JSON is not an array");
+        allEvents = data.filter(e => e && e.title && e.start);
+        if (!allEvents.length){
+          searchMeta.textContent = "No usable dated events found in JSON.";
+        }
+        renderAll();
+      }catch(err){
+        document.querySelector(".app").innerHTML = `<div class="error">Failed to load events. ${escapeHtml(err.message || String(err))}<br><br>Make sure your JSON URL is public and valid.</div>`;
+      }
+    }
+
+    searchInput.addEventListener("input", (e) => {
+      searchQuery = e.target.value.trim();
+      renderAll();
+    });
+
+    prevMonthBtn.addEventListener("click", () => {
+      selectedMonth--;
+      if (selectedMonth < 0){
+        selectedMonth = 11;
+        selectedYear--;
+      }
+      renderAll();
+    });
+
+    nextMonthBtn.addEventListener("click", () => {
+      selectedMonth++;
+      if (selectedMonth > 11){
+        selectedMonth = 0;
+        selectedYear++;
+      }
+      renderAll();
+    });
+
+    renderWeekdays();
+    loadEvents();
+  </script>
+</body>
+</html>
